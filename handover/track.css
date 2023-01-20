@@ -1,0 +1,47 @@
+.track__h2,
+.track-req__h2{
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.track__table,
+.track-req__table{
+    border-collapse: collapse;
+    width: 80%;
+    margin: auto;
+}
+
+.track-req__table td,th ,
+.track__table td, th{
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+
+.track-req__table tr:nth-child(odd),
+.track__table tr:nth-child(even){
+    background-color: #dddddd;
+}
+.track__table tr td:nth-child(5){
+    align-items: center;
+    
+}
+
+.handover__button{
+    border: 1px solid rgb(117, 101, 101);
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    /* background-color: black; */
+    transition: 0.3s;
+}
+.handover__button:hover{
+    background-color: #dbc4c4;
+}
+
+.handover__button-disable{
+    cursor: not-allowed;
+}
+
