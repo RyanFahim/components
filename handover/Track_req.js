@@ -1,81 +1,162 @@
-import React, { useState } from 'react'
-import Track_data from './data'
-import SingleSelect from './SingleSelect'
-// import awards from "./data"
-import Select_data from './data2'
+import React, { useEffect, useState } from 'react'
+import ShowHandoverAPI from '../API/ShowHandoverAPI'
+import ShowOrganizationApi from '../API/ShowOrganizationApi';
+
 
 const Track_req = () => {
-  // console.log("From track request ", Track_data)
-  // console.log("The select Data is  ", Select_data)
 
-  const [selectData, setSelectData] = useState('')
-  const [values, setValues] = useState([])
-  const [option, setOption] = useState()
-  const [aID, setAID] = useState(0)
-  const [number, setNumber] = useState(0);
+  /**===> USING USTATE FOR HANDOVER DATA TO MAP <=== */
+  const [handoverData, setHandoverData] = useState([])
 
-console.log("parent select data ", selectData)
-  const [age, setAge] = useState('');
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+  /**useState for ORGANIZATION */
+  const [organizationData, setOrganizationData] = useState([])
+
+
+
+ 
+
+
+  /**===> API CALLING START <=== */
+
+  useEffect(() => {
+
+    const fetchHandoverTableData = async () => {
+      const showHandoverData = await ShowHandoverAPI();
+
+      if (showHandoverData.success == true) {
+        // console.log(JSON.stringify(handoverData, null, 2))
+        setHandoverData(showHandoverData.body)
+      }
+    }
+    fetchHandoverTableData();
+  }, [])
+
+  /**===> API CALLING END <=== */
+
+
+
+
+
+
+  /** ===> API CALL FOR ORGANIZATION SELECTION START <=== **/
+
+  useEffect(() => {
+    const fetchOrganizationApi = async () => {
+      const showOrganizationData = await ShowOrganizationApi();
+
+      if (showOrganizationData.success == true) {
+        
+        setOrganizationData(showOrganizationData.body)
+        // console.log(JSON.stringify(organizationData.body, null, 2))
+
+      }
+    }
+    fetchOrganizationApi();
+  }, [])
+
+  /** ===> API CALL FOR ORGANIZATION SELECTION END <=== **/
+
+
+
+
+
+  /** ===> API SEND FOR APPROVING HANDOVER STARTS <===* */
+
+  async function approveHandover(h_id, h_org) {
+    
+    const res = await fetch("https://tracktest.ultra-x.jp/handover/handover/approveHandover",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Authorization": `Bearer ${ process.env.REACT_APP_TOKEN }`
+      },
+      body: JSON.stringify({
+        handover_id: h_id,
+        request_to: h_org
+      })
+    });
+    const value = await res.json();
+    console.log("Approve handover data is " + JSON.stringify(value, null, 2))
+    // console.log(h_org)
+    return value
+  }
+
+
+  /** ===> API SEND FOR APPROVING HANDOVER ENDS <===* */
+
+
 
   return (
-    // console.log(Select_data);
+
     <>
 
       <h2 className="track-req__h2">Handover table</h2>
 
       <table className="track-req__table">
         <tr style={{ color: "white", backgroundColor: "#5b9346" }}>
+          <th>Handover ID</th>
           <th>Track ID</th>
-          <th>Project ID</th>
-          <th>Reuse Track ID</th>
-          {/* <th>Org</th> */}
-          <th>Select Org</th>
+          {/* <th>Project ID</th> */}
+          <th>Status</th>
+          <th>Org</th>
           <th>Action</th>
         </tr>
 
-        {Track_data.map((t, index) => {
+        {handoverData.map((h, index) => {
 
-          
-         
-          console.log({option}, t.track_id, number)
+
+
+
           return (
-
-            <tr  id={t.track_id}>
-              <td> {t.track_id} </td>
-              <td> {t.project_id} </td>
-              <td> {t.reuse_trackid} </td>
-              {/* <td>
-                { t.track_id?"Ultax-x BD" : "BJIT"}
-              </td> */}
-              {/* <td> {selectData} </td> */}
-              <td>
-                <SingleSelect key={index} selectDataX={selectData} setSelectData={setSelectData} t={t.track_id} number={number} setNumber={setNumber} />
-                {/* <p>{ t.track_id ===  ? selectData: "BJIT"}</p> */}
+            <>
+              
+              <tr id={h.track_id}>
+                <td> {h._id} </td>
+                <td> {h.track_id} </td>
+                {/* <td> {h.project} </td> */}
+                <td> {h.status} </td>
                 
+                <td>
+                  
+                 
+                  <select onChange={e => (h._org = (e.target.value))}
+                  
+                  >
+                    <option></option>
+                    
+                    {organizationData.map((o) =>
+                      <option value={o._id}>{o.name_en}</option>
+                    )}
 
 
+                  </select>
+                 
+
+                </td>
 
 
+                {/* Future work with org */}
 
-              </td>
 
-              <td>
-                <button className="handover__button"> Send </button>
-              </td>
+                <td>
 
-            </tr>
+                  <button
+                    className="handover__button"
+                    onClick={() => approveHandover(h._id, h._org)}
+                    
+                  >  Send </button>
+
+                </td>
+
+              </tr>
+            </>
           )
         })}
       </table>
 
-
-
-
-
+     
     </>
   )
 }

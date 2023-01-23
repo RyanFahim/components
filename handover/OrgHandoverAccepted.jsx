@@ -157,7 +157,7 @@ const OrgHandoverAccepted = () => {
         <Box sx={style}>
 
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Ogranization selection dde degryrygdxcgddqa {handoverClickId}
+           Organization selection for {handoverClickId}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Select  <br />
